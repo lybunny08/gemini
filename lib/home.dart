@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -10,13 +12,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  static const apiKey = "AIzaSyBp7bGpInRyRJR8knWvxvEr9o2Cr1VArr0";
-  final model = GenerativeModel(model: 'gemini', apiKey: apiKey);
+  static const apiKey = "AIzaSyCzjSwgYzcjoiVDQO76KbFvKbKJVTtnZjs";
+  final model = GenerativeModel(model: 'gemini-1.0-pro', apiKey: apiKey);
   final TextEditingController _userMessage = TextEditingController();
   final List<Message> _messages = [];
+  final bool _isMessageEmpty = true;
 
   Future<void> sendMessage() async {
-    final message = _userMessage.text;
+    final message = _userMessage.text
+        .trim(); // Trim pour supprimer les espaces vides au début et à la fin
+    if (message.isEmpty) {
+      // Si le message est vide, ne rien faire
+      return;
+    }
+
     _userMessage.clear();
 
     setState(() {
@@ -58,17 +67,33 @@ class _HomeState extends State<Home> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             child: Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    controller: _userMessage,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                  child: SingleChildScrollView(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: TextFormField(
+                        controller: _userMessage,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(50)),
+                          ),
+                          labelText: 'Enter your message',
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              // Dissimuler le clavier lors du clic sur le bouton
+                              FocusScope.of(context).unfocus();
+                            },
+                            icon: const Icon(Icons.keyboard_arrow_down),
+                          ),
+                        ),
+                        maxLines:
+                            null, // Permet à TextFormField de se mettre à la ligne automatiquement
+                        textAlignVertical: TextAlignVertical
+                            .top, // Alignement du texte en haut
                       ),
-                      labelText: 'Enter your message',
                     ),
                   ),
                 ),
