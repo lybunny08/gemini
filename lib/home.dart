@@ -4,7 +4,6 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 class Home extends StatefulWidget {
@@ -35,19 +34,8 @@ class _HomeState extends State<Home> {
     _initSpeech();
     modelViewer = const ModelViewer(
       ar: false,
-      src: 'assets/65ea2cda03a681e6e0e6e4f2 (2).glb',
+      src: 'assets/suzanne.glb',
     );
-  }
-
-  void synchronizeMouth(String geminiResponse) {
-    // Identifiez les phonèmes ou les mots clés dans la réponse de Gemini
-    // et associez-les aux étapes d'animation du modèle 3D
-
-    if (geminiResponse.contains('hello')) {
-      // Déclenchez l'animation "hello" sur le modèle 3D
-    } else if (geminiResponse.contains('thank you')) {
-      // Déclenchez l'animation "thank you" sur le modèle 3D
-    }
   }
 
   void _initSpeech() async {
@@ -69,7 +57,7 @@ class _HomeState extends State<Home> {
     setState(() {
       modelViewer = const ModelViewer(
         autoPlay: true,
-        src: 'assets/65ea2cda03a681e6e0e6e4f2 (2).glb',
+        src: 'assets/suzanne.glb',
       );
     });
   }
@@ -78,7 +66,7 @@ class _HomeState extends State<Home> {
     setState(() {
       modelViewer = const ModelViewer(
         autoPlay: false,
-        src: 'assets/65ea2cda03a681e6e0e6e4f2 (2).glb',
+        src: 'assets/suzanne.glb',
       );
     });
   }
@@ -103,15 +91,6 @@ class _HomeState extends State<Home> {
                   height: 400,
                   child: modelViewer,
                 ),
-                // InAppWebView(
-                //     initialUrlRequest: URLRequest(
-                //         url: Uri.parse(
-                //             '')), // Remplacez ceci par l'URL de votre application React
-                //     initialOptions: InAppWebViewGroupOptions(
-                //       crossPlatform: InAppWebViewOptions(
-                //         javaScriptEnabled: true,
-                //       ),
-                //     )),
                 const SizedBox(
                   height: 20,
                 ),
