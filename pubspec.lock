@@ -62,6 +62,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_inappwebview:
+    dependency: "direct main"
+    description:
+      name: flutter_inappwebview
+      sha256: d198297060d116b94048301ee6749cd2e7d03c1f2689783f52d210a6b7aba350
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.8.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -192,6 +200,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.0"
+  mime:
+    dependency: transitive
+    description:
+      name: mime
+      sha256: "2e123074287cc9fd6c09de8336dae606d1ddb88d9ac47358826db698c176a1f2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
   model_viewer_plus:
     dependency: "direct main"
     description:
@@ -429,6 +445,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
+  webview_flutter_plus:
+    dependency: "direct main"
+    description:
+      name: webview_flutter_plus
+      sha256: "54714cdf41b595970cd58b54e1f549f57583c91d9ccb7eb1fef24df9693ab3da"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.4"
   webview_flutter_wkwebview:
     dependency: transitive
     description:

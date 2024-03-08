@@ -1,17 +1,17 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeState createState() => _HomeState();
 }
 
@@ -22,24 +22,35 @@ class _HomeState extends State<Home> {
   final FlutterTts flutterTts = FlutterTts();
   String _text = '';
   bool _isListening = false;
-  late Timer _timer;
+  late Timer _timer = Timer(Duration.zero, () {});
   bool _isSpeaking = false;
+// Variable pour suivre l'état de l'animation du modèle 3D
 
-  // Contrôleur pour l'animation du modèle 3D
   late ModelViewer modelViewer;
 
   @override
   void initState() {
     super.initState();
+    _timer = Timer(Duration.zero, () {});
     _initSpeech();
     modelViewer = const ModelViewer(
-      autoPlay: false,
-      src: 'assets/angelica.glb',
+      ar: false,
+      src: 'assets/65ea2cda03a681e6e0e6e4f2 (2).glb',
     );
   }
 
+  void synchronizeMouth(String geminiResponse) {
+    // Identifiez les phonèmes ou les mots clés dans la réponse de Gemini
+    // et associez-les aux étapes d'animation du modèle 3D
+
+    if (geminiResponse.contains('hello')) {
+      // Déclenchez l'animation "hello" sur le modèle 3D
+    } else if (geminiResponse.contains('thank you')) {
+      // Déclenchez l'animation "thank you" sur le modèle 3D
+    }
+  }
+
   void _initSpeech() async {
-    // Demande d'autorisation d'accès au microphone
     await speech.initialize(
       onStatus: (status) {
         if (kDebugMode) {
@@ -52,14 +63,24 @@ class _HomeState extends State<Home> {
         }
       },
     );
+  }
 
-    //bool isAvailable = await speech.requestPermission();
+  void _startModelAnimation() {
+    setState(() {
+      modelViewer = const ModelViewer(
+        autoPlay: true,
+        src: 'assets/65ea2cda03a681e6e0e6e4f2 (2).glb',
+      );
+    });
+  }
 
-    // if (!isAvailable) {
-    //   if (kDebugMode) {
-    //     print('Speech recognition not available');
-    //   }
-    // }
+  void _stopModelAnimation() {
+    setState(() {
+      modelViewer = const ModelViewer(
+        autoPlay: false,
+        src: 'assets/65ea2cda03a681e6e0e6e4f2 (2).glb',
+      );
+    });
   }
 
   @override
@@ -82,6 +103,15 @@ class _HomeState extends State<Home> {
                   height: 400,
                   child: modelViewer,
                 ),
+                // InAppWebView(
+                //     initialUrlRequest: URLRequest(
+                //         url: Uri.parse(
+                //             '')), // Remplacez ceci par l'URL de votre application React
+                //     initialOptions: InAppWebViewGroupOptions(
+                //       crossPlatform: InAppWebViewOptions(
+                //         javaScriptEnabled: true,
+                //       ),
+                //     )),
                 const SizedBox(
                   height: 20,
                 ),
@@ -103,10 +133,8 @@ class _HomeState extends State<Home> {
                 ),
                 ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.white), // Fond blanc
-                    foregroundColor:
-                        MaterialStateProperty.all(Colors.black), // Texte noir
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    foregroundColor: MaterialStateProperty.all(Colors.black),
                   ),
                   onPressed: _stopSpeaking,
                   child: const Text(
@@ -114,7 +142,7 @@ class _HomeState extends State<Home> {
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                    ), // Couleur du texte noire
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -142,31 +170,27 @@ class _HomeState extends State<Home> {
           _text = result.recognizedWords;
         });
 
-        // Log pour afficher le texte reconnu avant nettoyage
         if (kDebugMode) {
           print('Text before cleaning: ${result.recognizedWords}');
         }
 
-        // Supprimer les caractères spéciaux des réponses vocales
         String cleanedText = _cleanText(result.recognizedWords);
 
-        // Log pour afficher le texte après nettoyage
         if (kDebugMode) {
           print('Text after cleaning: $cleanedText');
         }
 
-        // Envoyer la question à l'API de Gemini et obtenir la réponse
         GenerateContentResponse geminiResponse =
             await getGeminiResponse(cleanedText);
 
-        // Reproduire la réponse vocalement seulement si elle n'est pas en cours de lecture
         if (!_isSpeaking) {
           _isSpeaking = true;
           await _speak(geminiResponse.text ?? "");
           _isSpeaking = false;
+// Commencer l'animation du modèle lorsque Gemini parle
+          _startModelAnimation();
         }
 
-        // Arrêter d'écouter après quelques secondes
         _timer = Timer(const Duration(seconds: 2), () {
           _stopListening();
         });
@@ -181,22 +205,15 @@ class _HomeState extends State<Home> {
     }
   }
 
-  // String _cleanText(String text) {
-  //   // Utiliser une expression régulière pour supprimer les caractères spéciaux
-  //   return text.replaceAll(RegExp(r'[^\w\s]+'), '');
-  // }
   String _cleanText(String text) {
-    // Convertir le texte en minuscules et supprimer les caractères non alphanumériques
     return text.toLowerCase().replaceAll(RegExp(r'[^a-z0-9\s]+'), '');
   }
 
   Future<GenerateContentResponse> getGeminiResponse(String question) async {
-    // Generate content using the model
     try {
       final response = await model.generateContent([Content.text(question)]);
       return response;
     } catch (e) {
-      // Handle error
       if (kDebugMode) {
         print('Error generating response from Gemini: $e');
       }
@@ -205,21 +222,29 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _speak(String text) async {
-    // Utilisez FlutterTts pour reproduire le texte vocalement
     await flutterTts.speak(text);
   }
 
   void _stopListening() {
+    if (_timer.isActive) {
+      _timer.cancel();
+    }
     if (speech.isListening) {
       setState(() {
         _isListening = false;
       });
       speech.stop();
-      _timer.cancel(); // Annuler le timer si l'arrêt est manuel
     }
   }
 
   void _stopSpeaking() {
     flutterTts.stop();
+    _stopModelAnimation(); // Arrêtez l'animation du modèle lorsque Gemini arrête de parler
+// Arrêter l'animation du modèle lorsque Gemini arrête de parler
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

@@ -1,0 +1,45 @@
+<!-- talking_head.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talking Head</title>
+    <script src="https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.0.0/talkinghead.mjs"></script>
+</head>
+<body>
+    <div id="avatar"></div>
+    <script>
+        const nodeAvatar = document.getElementById('avatar');
+        const head = new TalkingHead(nodeAvatar, {
+            ttsEndpoint: "/gtts/",
+            jwtGet: jwtGet
+        });
+
+        async function showAvatar() {
+            try {
+                await head.showAvatar({
+                    url: 'assets/angelica.glb',
+                    body: 'F',
+                    avatarMood: 'neutral',
+                    ttsLang: "en-GB",
+                    ttsVoice: "en-GB-Standard-A",
+                    lipsyncLang: 'en'
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        function speakText(text) {
+            head.speakText(text);
+        }
+
+        function jwtGet() {
+            // Implement logic to retrieve JWT token
+            // You may need to communicate with your backend to obtain the token
+            // This function should return the JWT token as a string
+        }
+    </script>
+</body>
+</html>
